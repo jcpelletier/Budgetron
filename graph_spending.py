@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import sys
 import os
 
-def plot_spending(csv_file, target_budget, output_path):
+def graph_spending(csv_file, target_budget, output_path):
     try:
         # Read the CSV file
         transactions_df = pd.read_csv(csv_file)
