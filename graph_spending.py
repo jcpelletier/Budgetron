@@ -77,4 +77,4 @@ if __name__ == "__main__":
         if not os.path.exists(csv_file):
             print(f"Error: File '{csv_file}' not found.")
         else:
-            plot_spending(csv_file, target_budget, output_path)
+            graph_spending(csv_file, target_budget, output_path)
