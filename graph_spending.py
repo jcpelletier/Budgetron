@@ -10,7 +10,7 @@ def plot_spending(csv_file, target_budget, output_path):
 
         # Clean and preprocess the data
         transactions_df['date'] = pd.to_datetime(transactions_df['date'], errors='coerce')
-        transactions_df['amount'] = transactions_df['amount'].replace('[\$,]', '', regex=True).astype(float)
+        transactions_df['amount'] = transactions_df['amount'].replace(r'[\$,]', '', regex=True).astype(float)
 
         # Filter out negative amounts (payments or refunds)
         filtered_positive_spending = transactions_df[transactions_df['amount'] > 0]
