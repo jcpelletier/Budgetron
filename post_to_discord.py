@@ -16,7 +16,7 @@ def process_message_with_chatgpt(api_key, message):
     data = {
         "model": "gpt-3.5-turbo",
         "messages": [
-            {"role": "system", "content": "You are a QA engineer reading an automated system status. Give a response to post in a team chat about the status message."},
+            {"role": "system", "content": "You are a financial assistance bot reading an automated system status. Write a brief update for the solo developer to post in an update chat about the status message. Do not suggest you are fixing anything. Use a red emoticon if it is something bad. Use a green emoticon if it is something good."},
             {"role": "user", "content": message},
         ],
         "max_tokens": 100,
@@ -26,16 +26,25 @@ def process_message_with_chatgpt(api_key, message):
         response = requests.post(url, headers=headers, json=data)
         response.raise_for_status()
         return response.json()["choices"][0]["message"]["content"]
+    except requests.exceptions.HTTPError as e:
+        if response.status_code == 401:
+            print("Error: Invalid ChatGPT API key. Please verify your API key and try again.")
+            sys.exit(1)  # Halt execution
+        else:
+            print(f"HTTP error interacting with ChatGPT: {e}")
     except requests.exceptions.RequestException as e:
-        print(f"Error interacting with ChatGPT: {e}")
-        return message  # Fallback to the original message if ChatGPT fails
+        print(f"Request error interacting with ChatGPT: {e}")
+    return message  # Fallback to the original message if ChatGPT fails
 
 # Function to post message to Discord
 def post_to_discord(bot_token, channel_id, message, image_path=None):
     chatgpt_api_key = os.getenv("CHATGPT_API_KEY")
-    if chatgpt_api_key:
-        print("Processing message with ChatGPT...")
-        message = process_message_with_chatgpt(chatgpt_api_key, message)
+    if not chatgpt_api_key:
+        print("Error: ChatGPT API key is not set. Please set the CHATGPT_API_KEY environment variable.")
+        sys.exit(1)
+
+    print("Processing message with ChatGPT...")
+    message = process_message_with_chatgpt(chatgpt_api_key, message)
 
     url = f"https://discord.com/api/v10/channels/{channel_id}/messages"
     headers = {
