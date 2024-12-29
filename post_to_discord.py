@@ -2,28 +2,49 @@ import requests
 import sys
 import os
 
+# Function to process message using ChatGPT
+
+def process_message_with_chatgpt(api_key, message):
+    if not api_key:
+        raise ValueError("ChatGPT API key is not set. Please set the CHATGPT_API_KEY environment variable.")
+
+    url = "https://api.openai.com/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+    }
+    data = {
+        "model": "gpt-3.5-turbo",
+        "messages": [
+            {"role": "system", "content": "You are a QA engineer reading an automated system status. Give a response to post in a team chat about the status message."},
+            {"role": "user", "content": message},
+        ],
+        "max_tokens": 100,
+    }
+
+    try:
+        response = requests.post(url, headers=headers, json=data)
+        response.raise_for_status()
+        return response.json()["choices"][0]["message"]["content"]
+    except requests.exceptions.RequestException as e:
+        print(f"Error interacting with ChatGPT: {e}")
+        return message  # Fallback to the original message if ChatGPT fails
+
+# Function to post message to Discord
 def post_to_discord(bot_token, channel_id, message, image_path=None):
-    """
-    Posts a message (and optionally an image) to a Discord channel.
+    chatgpt_api_key = os.getenv("CHATGPT_API_KEY")
+    if chatgpt_api_key:
+        print("Processing message with ChatGPT...")
+        message = process_message_with_chatgpt(chatgpt_api_key, message)
 
-    :param bot_token: The bot token for authentication.
-    :param channel_id: The ID of the Discord channel to post to.
-    :param message: The message content.
-    :param image_path: Optional path to an image file.
-    """
     url = f"https://discord.com/api/v10/channels/{channel_id}/messages"
-
-    # Headers with bot token
     headers = {
         "Authorization": f"Bot {bot_token}"
     }
-
-    # Prepare data
     data = {
         "content": message
     }
 
-    # If an image path is provided, include it as a file
     files = None
     if image_path:
         if not os.path.isfile(image_path):
@@ -33,10 +54,8 @@ def post_to_discord(bot_token, channel_id, message, image_path=None):
             files = {"file": file}
             response = requests.post(url, headers=headers, data=data, files=files)
     else:
-        # No image, send the message without files
         response = requests.post(url, headers=headers, data=data)
 
-    # Handle response
     try:
         response.raise_for_status()
         print("Message sent successfully!")
@@ -51,7 +70,6 @@ def post_to_discord(bot_token, channel_id, message, image_path=None):
             print(f"HTTP error occurred: {http_err}")
     except requests.exceptions.RequestException as req_err:
         print(f"Request error occurred: {req_err}")
-
 
 if __name__ == "__main__":
     if len(sys.argv) < 4:
