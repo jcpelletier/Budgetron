@@ -23,7 +23,7 @@ def main(source_csv, classification_csv, output_image):
     # Load the source CSV
     transactions = pd.read_csv(source_csv)
     transactions['date'] = pd.to_datetime(transactions['date'], errors='coerce')
-    transactions['amount'] = transactions['amount'].replace('[\$,]', '', regex=True).astype(float)
+    transactions['amount'] = transactions['amount'].replace(r'[\$,]', '', regex=True).astype(float)
 
     # Load the category mappings
     mappings = load_mappings(classification_csv)
