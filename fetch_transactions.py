@@ -1,5 +1,6 @@
 import sys
 import time
+import csv
 from datetime import datetime, timedelta, date
 from plaid.api import plaid_api
 from plaid.model.sandbox_public_token_create_request import SandboxPublicTokenCreateRequest
@@ -11,7 +12,7 @@ from plaid.configuration import Configuration
 from plaid.api_client import ApiClient
 
 
-def fetch_transactions(client_id, secret, max_retries=5, delay=10):
+def fetch_transactions(client_id, secret, max_retries=5, delay=10, output_file="transactions.csv"):
     # Setup Plaid API configuration
     configuration = Configuration(
         host="https://sandbox.plaid.com",
@@ -52,7 +53,7 @@ def fetch_transactions(client_id, secret, max_retries=5, delay=10):
                     end_date=end_date,
                     options=TransactionsGetRequestOptions(
                         count=100,  # Maximum number of transactions per request
-                        offset=0    # Offset for pagination
+                        offset=0  # Offset for pagination
                     )
                 )
 
@@ -60,10 +61,19 @@ def fetch_transactions(client_id, secret, max_retries=5, delay=10):
                 response = client.transactions_get(transactions_request)
                 transactions = response.transactions
 
-                # Print transaction data
-                print(f"Transactions from {start_date} to {end_date}:")
-                for transaction in transactions:
-                    print(f"{transaction.date}: {transaction.name} - ${transaction.amount}")
+                # Write transactions to a CSV file
+                with open(output_file, mode='w', newline='', encoding='utf-8') as csv_file:
+                    writer = csv.writer(csv_file)
+                    writer.writerow(["Date", "Description", "Amount"])  # CSV header
+
+                    print("Date, Description, Amount")  # Print header to console
+                    for transaction in transactions:
+                        # Write to CSV
+                        writer.writerow([transaction.date, transaction.name, transaction.amount])
+                        # Print to console
+                        print(f"{transaction.date}, {transaction.name}, {transaction.amount}")
+
+                print(f"Transactions saved to {output_file}")
                 return  # Exit function on success
 
             except Exception as e:
