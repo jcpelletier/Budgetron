@@ -3,13 +3,13 @@ import time
 import csv
 from datetime import datetime, timedelta
 from plaid.api import plaid_api
-from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
 from plaid.model.transactions_get_request import TransactionsGetRequest
 from plaid.model.transactions_get_request_options import TransactionsGetRequestOptions
 from plaid.configuration import Configuration
 from plaid.api_client import ApiClient
 
-def fetch_transactions(client_id, secret, link_token, max_retries=5, delay=10, output_file="transactions.csv"):
+
+def fetch_transactions(client_id, secret, access_token, max_retries=5, delay=10, output_file="transactions.csv"):
     # Setup Plaid API configuration
     configuration = Configuration(
         host="https://production.plaid.com",
@@ -22,14 +22,9 @@ def fetch_transactions(client_id, secret, link_token, max_retries=5, delay=10, o
     client = plaid_api.PlaidApi(api_client)
 
     try:
-        # Exchange the public token for an access token
-        exchange_request = ItemPublicTokenExchangeRequest(public_token=link_token)
-        exchange_response = client.item_public_token_exchange(exchange_request)
-        access_token = exchange_response.access_token
-
-        # Calculate the date range for the last 10 days
+        # Calculate the date range for the last 30 days
         end_date = datetime.now().date()
-        start_date = (datetime.now() - timedelta(days=10)).date()
+        start_date = (datetime.now() - timedelta(days=30)).date()
 
         # Retry mechanism for fetching transactions
         for attempt in range(max_retries):
@@ -75,13 +70,14 @@ def fetch_transactions(client_id, secret, link_token, max_retries=5, delay=10, o
     except Exception as e:
         print(f"Error fetching transactions: {e}")
 
+
 if __name__ == "__main__":
     if len(sys.argv) != 4:
-        print("Usage: python fetch_transactions.py <client_id> <secret> <link_token>")
+        print("Usage: python fetch_transactions.py <client_id> <secret> <access_token>")
         sys.exit(1)
 
     client_id = sys.argv[1]
     secret = sys.argv[2]
-    link_token = sys.argv[3]
+    access_token = sys.argv[3]
 
-    fetch_transactions(client_id, secret, link_token)
+    fetch_transactions(client_id, secret, access_token)
