@@ -1,4 +1,4 @@
-# Spending Analysis Tool
+# Budgetron Spending Analysis Tool
 
 This repository contains Python scripts to analyze and visualize your financial transactions, helping you understand spending habits and track your budget effectively. The scripts are designed to work specifically with PayPal Mastercard statement exports in CSV format, but can be adapted for other transaction data with similar formatting.
 
