@@ -10,11 +10,12 @@ This repository contains Python scripts to analyze and visualize your financial 
 - **Libraries**:
   - `pandas`
   - `matplotlib`
+  - `requests`
 
 Install the required libraries using pip:
 
 ```bash
-pip install pandas matplotlib
+pip install pandas matplotlib requests
 ```
 
 ---
@@ -70,6 +71,57 @@ python graph_spending.py transactions.csv categories.csv 1500 spending_vs_budget
 
 ---
 
+### 3. `driver_analysis.py`
+
+This script automates the analysis process by identifying the latest transaction file for the previous month, running analysis scripts, and sending notifications via Discord.
+
+#### Usage
+
+```bash
+python driver_analysis.py --folder <csv_folder> --classification_csv <classification_csv> --budget <budget> --bot_token <bot_token> --channel_id <channel_id>
+```
+
+#### Parameters
+
+- `--folder`: Folder containing CSV files for transactions.
+- `--classification_csv`: Path to the CSV file for spending classifications.
+- `--budget`: Target spending budget.
+- `--bot_token`: Discord bot token for notifications.
+- `--channel_id`: Discord channel ID for posting updates.
+
+#### Example
+
+```bash
+python driver_analysis.py --folder ./transactions --classification_csv categories.csv --budget 2000 --bot_token BOT_TOKEN --channel_id 123456789012345678
+```
+
+---
+
+### 4. `post_to_discord.py`
+
+This script posts messages and images to a Discord channel, optionally processing messages with OpenAI’s ChatGPT for better phrasing.
+
+#### Usage
+
+```bash
+python post_to_discord.py <bot_token> <channel_id> <message> [<image_path>]
+```
+
+#### Parameters
+
+- `<bot_token>`: Discord bot token for authentication.
+- `<channel_id>`: ID of the Discord channel where the message will be posted.
+- `<message>`: Text message to be posted.
+- `<image_path>` (optional): Path to an image file to include with the message.
+
+#### Example
+
+```bash
+python post_to_discord.py BOT_TOKEN 123456789012345678 "Budget analysis complete!" spending_graph.png
+```
+
+---
+
 ## Classification.csv Format
 
 The `classification.csv` file is used to define the mappings between transaction descriptions and their corresponding spending categories. Each row in the file represents a specific keyword and its associated category.
@@ -81,12 +133,6 @@ The `classification.csv` file is used to define the mappings between transaction
 | stop and shop    | chipotle         | blue bottle coffee | chili's        | xbox games       | target            |
 | market basket    | taco bell        | peet's coffee     | olive garden   | playstation games | ebay              |
 | whole foods      | panda express    | dunkin' donuts    | red robin      | steam games      | vans              |
-| hornstra farm    | pizza hut        | caribou coffee    | denny's        |                  | rei               |
-| Stop & Shop      | boston market    | starbucks         | applebee's     |                  | etsy              |
-|                  |                  |                   |                 |                  | urban outfitters  |
-|                  |                  |                   |                 |                  | keeping pace with |
-|                  |                  |                   |                 |                  | seoane landscaping|
-|                  |                  |                   |                 |                  | gourmetgiftbaskets|
 
 - **Categories**: The spending categories, such as Grocery, Take Out, etc., listed as column headers.
 - **Keywords**: Business names or descriptors matching transactions, listed under the relevant categories.
