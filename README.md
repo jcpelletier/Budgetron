@@ -141,6 +141,10 @@ Ensure that the file is saved in CSV format and that it contains a header row.
 
 ---
 
+## Example Discord Output
+
+![Example Discord Output](https://budgetron-storage-public.s3.us-east-1.amazonaws.com/PostExample.png)
+
 ## License
 
 This project is licensed under the MIT License.
