@@ -122,6 +122,35 @@ python post_to_discord.py BOT_TOKEN 123456789012345678 "Budget analysis complete
 
 ---
 
+### 5. `check_csv_file.py`
+
+This script checks for the presence of a CSV file for the current month and year in a specified folder. If a file is found, it sends a notification to a Discord channel. This is useful for ensuring that transaction data is uploaded in a timely manner.
+
+#### Usage
+
+```bash
+python check_csv_file.py --folder <csv_folder> --bot_token <bot_token> --channel_id <channel_id>
+```
+
+#### Parameters
+
+- `--folder`: Folder containing the CSV files.
+- `--bot_token`: Discord bot token for sending notifications.
+- `--channel_id`: Discord channel ID where notifications will be posted.
+
+#### Example
+
+```bash
+python check_csv_file.py --folder ./transactions --bot_token BOT_TOKEN --channel_id 123456789012345678
+```
+
+#### Functionality
+
+- Searches for a CSV file with the format `<Month> <Year> -*.csv` (e.g., "December 2024 -*.csv").
+- Sends a notification to Discord indicating whether the file was found or not.
+
+---
+
 ## Classification.csv Format
 
 The `classification.csv` file is used to define the mappings between transaction descriptions and their corresponding spending categories. Each row in the file represents a specific keyword and its associated category.
