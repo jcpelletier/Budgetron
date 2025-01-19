@@ -174,6 +174,74 @@ Ensure that the file is saved in CSV format and that it contains a header row.
 
 ![Example Discord Output](https://budgetron-storage-public.s3.us-east-1.amazonaws.com/PostExample.png)
 
+### 6. 'fetch_google_drive.py'
+
+This project contains a Python script, `fetch_google_drive.py`, that allows you to download files from Google Drive using the Google Drive API.
+
+#### Prerequisites
+
+1. **Google Cloud Credentials**:
+   - Obtain a `credentials.json` file from the Google Cloud Console. This file is required for OAuth authentication.
+   - Place the `credentials.json` file in the same directory as the script.
+
+2. **Install Required Libraries**:
+   - Install the required Python libraries using pip:
+     ```bash
+     pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
+     ```
+
+3. **Set Up Environment**:
+   - Ensure you have Python 3.7 or later installed.
+   - Verify you have access to the file you want to download from Google Drive.
+
+#### How to Use
+
+#### Command-Line Usage
+
+Run the script using the following syntax:
+
+```bash
+python fetch_google_drive.py <file_id> <destination_path> [--mime_type <mime_type>]
+```
+
+#### Required Arguments:
+- `<file_id>`: The unique ID of the file on Google Drive. You can find this in the file's URL (e.g., `https://drive.google.com/file/d/<file_id>/view`).
+- `<destination_path>`: The path where the downloaded file will be saved. Include the file name and extension (e.g., `./classification.csv`).
+
+#### Optional Argument:
+- `--mime_type`: Specify the MIME type for export. For example, use `text/csv` to download a Google Sheets file as a CSV.
+
+#### Example Commands
+
+1. **Download a File in Its Original Format**:
+   ```bash
+   python fetch_google_drive.py 1A2B3C4D5E6F7G8H9I0J ./output_file.txt
+   ```
+
+2. **Download a Google Sheet as CSV**:
+   ```bash
+   python fetch_google_drive.py 1A2B3C4D5E6F7G8H9I0J ./output_file.csv --mime_type text/csv
+   ```
+
+#### Notes
+
+- On the first run, the script will open a browser window for OAuth authentication. This generates a `token.json` file for future use.
+- Ensure the script has write permissions for the specified `destination_path`.
+- The `token.json` file allows the script to authenticate without requiring repeated logins. If deleted, you will need to reauthenticate.
+
+#### Troubleshooting
+
+#### Common Issues
+
+1. **`token.json` Errors**:
+   - If you encounter errors related to `token.json` (e.g., corruption or missing fields), delete the file and rerun the script to regenerate it.
+
+2. **Permission Denied**:
+   - Verify write permissions for the destination directory. Do you have the file open?
+
+3. **`redirect_uri_mismatch` Error**:
+   - Ensure the redirect URI is configured correctly in the Google Cloud Console.
+
 ## License
 
 This project is licensed under the MIT License.
