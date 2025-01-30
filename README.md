@@ -176,7 +176,7 @@ Ensure that the file is saved in CSV format and that it contains a header row.
 
 ### 6. 'fetch_google_drive.py'
 
-This project contains a Python script, `fetch_google_drive.py`, that allows you to download files from Google Drive using the Google Drive API.
+This script allows you to download files from Google Drive using the Google Drive API.
 
 #### Prerequisites
 
