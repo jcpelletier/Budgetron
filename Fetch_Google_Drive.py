@@ -15,7 +15,6 @@ SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
 def authenticate_google_drive():
     """Authenticate with Google Drive and return a service object."""
     creds = None
-    # The token.json file stores the user's access and refresh tokens.
     if os.path.exists('token.json'):
         try:
             with open('token.json', 'r') as token_file:
@@ -23,7 +22,6 @@ def authenticate_google_drive():
         except Exception as e:
             print(f"Error reading token.json: {e}")
             creds = None
-    # If there are no valid credentials, prompt the user to log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             try:
@@ -32,25 +30,39 @@ def authenticate_google_drive():
                 print(f"Error refreshing token: {e}")
                 creds = None
         if not creds:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
             creds = flow.run_local_server(port=58142)
-        # Save the credentials for future use as a JSON file
         with open('token.json', 'w') as token_file:
             token_file.write(creds.to_json())
     return build('drive', 'v3', credentials=creds)
 
-def fetch_file(file_id, destination_path, mime_type):
+def is_folder(service, file_id):
+    """Check if a given file ID corresponds to a folder."""
+    try:
+        file_metadata = service.files().get(fileId=file_id, fields="mimeType").execute()
+        return file_metadata.get("mimeType") == "application/vnd.google-apps.folder"
+    except Exception as e:
+        print(f"Error checking file type: {e}")
+        return False
+
+def list_files_in_folder(service, folder_id):
+    """Retrieve a list of all file IDs inside a folder."""
+    try:
+        query = f"'{folder_id}' in parents and trashed=false"
+        results = service.files().list(q=query, fields="files(id, name)").execute()
+        return results.get('files', [])
+    except Exception as e:
+        print(f"Error listing folder contents: {e}")
+        return []
+
+def fetch_file(service, file_id, destination_path, mime_type=None):
     """Fetch a file from Google Drive and save it locally."""
-    service = authenticate_google_drive()
     try:
         if mime_type:
-            # Request export for specific MIME type
             request = service.files().export_media(fileId=file_id, mimeType=mime_type)
         else:
-            # Request the file in its original format
             request = service.files().get_media(fileId=file_id)
-
+        
         with io.FileIO(destination_path, 'wb') as file:
             downloader = MediaIoBaseDownload(file, request)
             done = False
@@ -61,15 +73,24 @@ def fetch_file(file_id, destination_path, mime_type):
     except Exception as e:
         print(f"An error occurred: {e}")
 
+def fetch_file_or_folder(service, file_id, destination_path, mime_type=None):
+    """Download a file or a folder from Google Drive."""
+    if is_folder(service, file_id):
+        os.makedirs(destination_path, exist_ok=True)
+        files = list_files_in_folder(service, file_id)
+        for file in files:
+            file_path = os.path.join(destination_path, file["name"])
+            fetch_file_or_folder(service, file["id"], file_path)  # Recursive call
+    else:
+        fetch_file(service, file_id, destination_path, mime_type)
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Download files from Google Drive.")
-    parser.add_argument("file_id", type=str, help="The ID of the Google Drive file to download.")
-    parser.add_argument("destination_path", type=str, help="The local path to save the file.")
+    parser = argparse.ArgumentParser(description="Download files or folders from Google Drive.")
+    parser.add_argument("file_id", type=str, help="The ID of the Google Drive file or folder to download.")
+    parser.add_argument("destination_path", type=str, help="The local path to save the file or folder.")
     parser.add_argument("--mime_type", type=str, default=None, help="The MIME type to download the file as (e.g., 'text/csv').")
 
     args = parser.parse_args()
 
-    try:
-        fetch_file(args.file_id, args.destination_path, args.mime_type)
-    except Exception as e:
-        print(f"Critical error: {e}")
+    service = authenticate_google_drive()
+    fetch_file_or_folder(service, args.file_id, args.destination_path, args.mime_type)
