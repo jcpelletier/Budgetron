@@ -33,11 +33,20 @@ def main(source_csv, classification_csv, output_image):
 
     # Print transactions categorized as "Other"
     other_transactions = transactions[transactions['category'] == 'Other']
+
     if not other_transactions.empty:
-        print("Transactions categorized as 'Other':")
-        print(other_transactions[['date', 'description', 'amount']].to_string(index=False))
+        output_text = "Transactions categorized as 'Other':\n"
+        output_text += other_transactions[['date', 'description', 'amount']].to_string(index=False)
+
+        print(output_text)  # Print to console
+
+        # Save to a text file
+        with open("other_transactions.txt", "w", encoding="utf-8") as file:
+            file.write(output_text + "\n")
     else:
         print("No transactions categorized as 'Other'.")
+        with open("other_transactions.txt", "w", encoding="utf-8") as file:
+            file.write("No transactions categorized as 'Other'.\n")
 
     # Exclude payments or balance-related transactions
     filtered_transactions = transactions[~transactions['description'].str.contains('payment|interest charge', case=False, na=False)]
