@@ -1,6 +1,7 @@
 import requests
 import sys
 import os
+import json
 
 # Configure UTF-8 encoding to avoid UnicodeEncodeError
 sys.stdout.reconfigure(encoding='utf-8')
@@ -61,7 +62,8 @@ def post_to_discord(bot_token, channel_id, message, use_chatgpt=False, image_pat
                 sys.exit(1)
             with open(image_path, "rb") as file:
                 files = {"file": file}
-                response = requests.post(url, headers=headers, data={"payload_json": str(data)}, files=files)
+                payload_json = json.dumps(data)  # Ensure valid JSON string
+                response = requests.post(url, headers=headers, data={"payload_json": payload_json}, files=files)
         else:
             headers["Content-Type"] = "application/json"
             response = requests.post(url, headers=headers, json=data)
