@@ -2,6 +2,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import sys
 
+# Ensure stdout supports UTF-8 (Windows workaround)
+sys.stdout.reconfigure(encoding='utf-8')
+
 def load_mappings(classification_csv):
     """Load category mappings from the classification CSV."""
     mappings = {}
