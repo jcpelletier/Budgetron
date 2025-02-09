@@ -2,6 +2,8 @@ import requests
 import sys
 import os
 
+# Configure UTF-8 encoding to avoid UnicodeEncodeError
+sys.stdout.reconfigure(encoding='utf-8')
 
 # Function to process message using ChatGPT
 def process_message_with_chatgpt(api_key, message):
@@ -34,7 +36,6 @@ def process_message_with_chatgpt(api_key, message):
 
     return message  # Fallback to the original message if ChatGPT fails
 
-
 # Function to post message to Discord
 def post_to_discord(bot_token, channel_id, message, use_chatgpt=False, image_path=None):
     """Posts a message to Discord, optionally processing it with ChatGPT first."""
@@ -52,29 +53,26 @@ def post_to_discord(bot_token, channel_id, message, use_chatgpt=False, image_pat
         "Authorization": f"Bot {bot_token}",
         "Content-Type": "application/json",
     }
-    data = {
-        "content": message
-    }
-
-    files = None
-    if image_path:
-        if not os.path.isfile(image_path):
-            print(f"Error: File '{image_path}' not found.")
-            sys.exit(1)
-        with open(image_path, "rb") as file:
-            files = {"file": file}
-            response = requests.post(url, headers=headers, data=data, files=files)
-    else:
-        response = requests.post(url, headers=headers, json=data)
+    data = {"content": message}
 
     try:
+        if image_path:
+            if not os.path.isfile(image_path):
+                print(f"Error: File '{image_path}' not found.")
+                sys.exit(1)
+            with open(image_path, "rb") as file:
+                files = {"file": file}
+                response = requests.post(url, headers=headers, data=data, files=files)
+        else:
+            response = requests.post(url, headers=headers, json=data)
+
         response.raise_for_status()
         print("✅ Message sent successfully to Discord!")
     except requests.exceptions.HTTPError as http_err:
         print(f"❌ HTTP error: {http_err}")
+        print(f"Response text: {response.text}")  # Log response for debugging
     except requests.exceptions.RequestException as req_err:
         print(f"❌ Request error: {req_err}")
-
 
 if __name__ == "__main__":
     if len(sys.argv) < 4:
