@@ -17,7 +17,7 @@ def process_message_with_chatgpt(api_key, message):
         "Content-Type": "application/json",
     }
     data = {
-        "model": "o3-mini",
+        "model": "gpt-3.5-turbo",
         "messages": [
             {"role": "system",
              "content": "You are a financial assistance bot reading an automated system status. Write a brief update for the solo developer to post in an update chat about the status message. Do not suggest you are fixing anything. Use a red emoticon if it is something bad. Use a green emoticon if it is something good."},
