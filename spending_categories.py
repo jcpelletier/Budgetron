@@ -38,7 +38,7 @@ def main(source_csv, classification_csv, output_image):
     other_transactions = transactions[transactions['category'] == 'Other']
 
     if not other_transactions.empty:
-        output_text = "📂 Transactions categorized as 'Other':\n"
+        output_text = "Transactions categorized as 'Other':\n"
         output_text += other_transactions[['date', 'description', 'amount']].to_string(index=False)
 
         print(output_text)  # Print to console
