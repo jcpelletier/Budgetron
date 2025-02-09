@@ -31,8 +31,8 @@ def find_latest_csv(folder_path, required_month, required_year):
         return None
 
 
-def send_discord_notification(bot_token, channel_id, message, image_path=None):
-    """Calls the post_to_discord.py script to send a notification."""
+def send_discord_notification(bot_token, channel_id, message, image_path=None, --use_chatgpt):
+    """Calls the post_to_discord.py script to send a notification."""s
     command = ["python", "post_to_discord.py", bot_token, channel_id, message]
     if image_path:
         command.append(image_path)
