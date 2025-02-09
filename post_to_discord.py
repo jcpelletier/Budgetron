@@ -50,8 +50,7 @@ def post_to_discord(bot_token, channel_id, message, use_chatgpt=False, image_pat
 
     url = f"https://discord.com/api/v10/channels/{channel_id}/messages"
     headers = {
-        "Authorization": f"Bot {bot_token}",
-        "Content-Type": "application/json",
+        "Authorization": f"Bot {bot_token}"
     }
     data = {"content": message}
 
@@ -62,8 +61,9 @@ def post_to_discord(bot_token, channel_id, message, use_chatgpt=False, image_pat
                 sys.exit(1)
             with open(image_path, "rb") as file:
                 files = {"file": file}
-                response = requests.post(url, headers=headers, data=data, files=files)
+                response = requests.post(url, headers=headers, data={"payload_json": str(data)}, files=files)
         else:
+            headers["Content-Type"] = "application/json"
             response = requests.post(url, headers=headers, json=data)
 
         response.raise_for_status()
