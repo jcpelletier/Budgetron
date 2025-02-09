@@ -3,6 +3,7 @@ import glob
 import subprocess
 from datetime import datetime, timedelta
 import argparse
+import sys
 
 # Ensure stdout supports UTF-8 (Windows workaround)
 sys.stdout.reconfigure(encoding='utf-8')
