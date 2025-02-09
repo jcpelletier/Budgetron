@@ -4,6 +4,8 @@ import subprocess
 from datetime import datetime, timedelta
 import argparse
 
+# Ensure stdout supports UTF-8 (Windows workaround)
+sys.stdout.reconfigure(encoding='utf-8')
 
 def find_latest_csv(folder_path, required_month, required_year):
     """Finds the latest CSV file for the required month and year."""
