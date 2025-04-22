@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 import sys
 import os
 
+# Ensure stdout supports UTF-8 (Windows workaround)
+sys.stdout.reconfigure(encoding='utf-8')
+
 def graph_spending(csv_file, target_budget, output_path):
     try:
         # Read the CSV file

@@ -1,2 +1,5 @@
 
 /.idea
+credentials.json
+token.json
+*.csv
