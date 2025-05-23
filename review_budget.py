@@ -84,13 +84,13 @@ def segment_transactions_by_billing_cycle(df, num_billing_cycles, billing_cutoff
 
     # Convert 'Date' column to datetime objects
     original_len = len(df)
-    df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
+    df['Date'] = pd.to_datetime(df['date'], errors='coerce')
     
     # Handle rows with unparseable dates
     if df['Date'].isnull().any():
-        num_invalid_dates = df['Date'].isnull().sum()
+        num_invalid_dates = df['date'].isnull().sum()
         print(f"Warning: Dropped {num_invalid_dates} rows due to unparseable dates.")
-        df.dropna(subset=['Date'], inplace=True)
+        df.dropna(subset=['date'], inplace=True)
     
     if df.empty:
         print("Warning: DataFrame is empty after handling invalid dates. Returning empty DataFrame.")
@@ -197,7 +197,7 @@ def analyze_transactions(api_key, budget, transactions_df, num_months, billing_c
         "Content-Type": "application/json",
     }
     data = {
-        "model": "o4-mini",
+        "model": "gpt-4",
         "messages": [
             {"role": "system", "content": "You are a financial assistant reviewing personal spending data."},
             {"role": "user", "content": prompt_text},
