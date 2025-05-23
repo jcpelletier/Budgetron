@@ -266,24 +266,25 @@ python fetch_google_drive.py <file_id> <destination_path> [--mime_type <mime_typ
 
 ### 8. `review_budget.py`
 
-This script concatenates transaction CSVs from the last two months, then sends the combined data to the OpenAI API (gpt-4) for a financial analysis against a provided budget. The script prints this analysis.
+This script concatenates transaction CSVs from the last specified number of months, then sends the combined data to the OpenAI API (gpt-4) for a financial analysis against a provided budget. It supports analysis for a variable number of months, allowing for more flexible trend identification. The script prints this analysis.
 
 #### Usage
 
 ```bash
-python review_budget.py <folder_path> <budget> <openai_api_key>
+python review_budget.py <folder_path> <budget> <openai_api_key> <num_months>
 ```
 
 #### Parameters
 
 - `<folder_path>`: Path to the folder containing the monthly transaction CSV files (e.g., "January 2024 - transactions.csv").
-- `<budget>`: Your total budget amount for the two-month period.
+- `<budget>`: Your total budget amount for the period analyzed.
 - `<openai_api_key>`: Your OpenAI API key.
+- `<num_months>`: An integer specifying the number of recent months of transaction data to analyze (e.g., 3 for the last 3 months).
 
 #### Example
 
 ```bash
-python review_budget.py ./transactions 2000 <your_openai_api_key>
+python review_budget.py ./transactions 2000 <your_openai_api_key> 3
 ```
 
 ## License
