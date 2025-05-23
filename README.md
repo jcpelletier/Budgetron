@@ -266,12 +266,12 @@ python fetch_google_drive.py <file_id> <destination_path> [--mime_type <mime_typ
 
 ### 8. `review_budget.py`
 
-This script concatenates transaction CSVs from the last specified number of months, then sends the combined data to the OpenAI API (gpt-4) for a financial analysis against a provided budget. It supports analysis for a variable number of months, allowing for more flexible trend identification. The script prints this analysis.
+This script concatenates transaction CSVs from the last specified number of months (or billing cycles), then sends the combined data to the OpenAI API (o4-mini) for a financial analysis against a provided budget. It supports analysis for a variable number of periods, allowing for more flexible trend identification. With the optional `--billing_cutoff_day` argument, the analysis can be aligned with user-defined billing cycles instead of standard calendar months. The script prints this analysis.
 
 #### Usage
 
 ```bash
-python review_budget.py <folder_path> <budget> <openai_api_key> <num_months>
+python review_budget.py <folder_path> <budget> <openai_api_key> <num_months> [--billing_cutoff_day DAY]
 ```
 
 #### Parameters
@@ -279,12 +279,19 @@ python review_budget.py <folder_path> <budget> <openai_api_key> <num_months>
 - `<folder_path>`: Path to the folder containing the monthly transaction CSV files (e.g., "January 2024 - transactions.csv").
 - `<budget>`: Your total budget amount for the period analyzed.
 - `<openai_api_key>`: Your OpenAI API key.
-- `<num_months>`: An integer specifying the number of recent months of transaction data to analyze (e.g., 3 for the last 3 months).
+- `<num_months>`: An integer specifying the number of recent calendar months or billing cycles of transaction data to analyze (e.g., 3 for the last 3 periods).
+- `--billing_cutoff_day DAY` (optional): An integer from 1 to 31 representing the day of the month your billing cycle typically ends. If provided, the script segments transactions based on these billing cycles. `num_months` will then refer to the number of billing cycles. If omitted, analysis defaults to standard calendar months.
 
 #### Example
 
+**Calendar Month Analysis:**
 ```bash
 python review_budget.py ./transactions 2000 <your_openai_api_key> 3
+```
+
+**Billing Cycle Analysis (e.g., cycle ends on the 25th):**
+```bash
+python review_budget.py ./transactions 2000 <your_openai_api_key> 3 --billing_cutoff_day 25
 ```
 
 ## License
