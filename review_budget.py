@@ -83,7 +83,7 @@ def analyze_transactions(api_key, budget, transactions_csv, num_months):
         "Content-Type": "application/json",
     }
     data = {
-        "model": "o4-mini",
+        "model": "gpt-4o-mini",
         "messages": [
             {"role": "system", "content": "You are a financial assistant reviewing personal spending data."},
             {"role": "user", "content": prompt_text},
